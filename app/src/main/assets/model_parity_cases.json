@@ -1,0 +1,952 @@
+[
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Magazalarimizdan yapacaginiz 300TLuzeri okul, bayram alisverisinize %20puan hediye SMS almak istemiyorsaniz RET268 yazip 4781'e gonderin. Mersis:142000836400019",
+  "preprocessed": "mesajlar | | magazalarimizdan yapacaginiz 300tluzeri okul, bayram alisverisinize %20puan hediye sms almak istemiyorsaniz ret268 yazip <num> 'e gonderin. mersis: <num>",
+  "proba": [
+   0.00066947,
+   0.00195073,
+   0.00018916,
+   0.00027973,
+   0.00014307,
+   0.00121794,
+   0.99433607,
+   0.00057234,
+   0.00021634,
+   0.0001237,
+   0.00030145
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Ya ben rüyamda görmedim ama dündü sanırım napıo bu kız diye facebooka falan bakmıştım",
+  "preprocessed": "mesajlar | | ya ben ruyamda gormedim ama dundu sanirim napio bu kiz diye facebooka falan bakmistim",
+  "proba": [
+   0.00299523,
+   0.95491457,
+   0.00290857,
+   0.00366949,
+   0.00194862,
+   0.00268494,
+   0.00868527,
+   0.00608958,
+   0.01080716,
+   0.001897,
+   0.00339957
+  ]
+ },
+ {
+  "app": "HepsiJET",
+  "title": "",
+  "text": "349293291 takip numaralı gönderiniz dağıtıma çıkmıştır.",
+  "preprocessed": "hepsijet | | <num> takip numarali gonderiniz dagitima cikmistir.",
+  "proba": [
+   0.0025768,
+   0.00118026,
+   0.00028737,
+   0.00181444,
+   0.00145039,
+   0.98594733,
+   0.00373946,
+   0.00060614,
+   0.00140282,
+   0.0004633,
+   0.0005317
+  ]
+ },
+ {
+  "app": "Hepsiburada",
+  "title": "Kupon",
+  "text": "KASIM84 koduyla ek %10 indirim!",
+  "preprocessed": "hepsiburada | kupon | kasim84 koduyla ek %10 indirim!",
+  "proba": [
+   0.01060616,
+   0.009995,
+   0.00501368,
+   0.00746379,
+   0.00442203,
+   0.01082978,
+   0.91935512,
+   0.01098125,
+   0.00504003,
+   0.01161999,
+   0.00467317
+  ]
+ },
+ {
+  "app": "Signal",
+  "title": "Annem",
+  "text": "Çıkartma",
+  "preprocessed": "signal | annem | cikartma",
+  "proba": [
+   0.00340632,
+   0.95344288,
+   0.01215173,
+   0.00487979,
+   0.00516855,
+   0.00286331,
+   0.00371813,
+   0.00285738,
+   0.00329255,
+   0.00402289,
+   0.00419648
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "bilgisayarı getirmeyi unutma",
+  "preprocessed": "mesajlar | | bilgisayari getirmeyi unutma",
+  "proba": [
+   0.00438101,
+   0.92118975,
+   0.00651383,
+   0.01098442,
+   0.00774199,
+   0.00702881,
+   0.02377858,
+   0.00308482,
+   0.00355917,
+   0.00377694,
+   0.00796067
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Android uygulamamiz guncellendi! Yeni tasarimi ve kolay kullanimiyla MyBilet Mobil ile bilet almak simdi cok daha kolay. Indirmek icin http://goo.gl/U0FLEQ",
+  "preprocessed": "mesajlar | | android uygulamamiz guncellendi! yeni tasarimi ve kolay kullanimiyla mybilet mobil ile bilet almak simdi cok daha kolay. indirmek icin <url>",
+  "proba": [
+   0.0300249,
+   0.03359759,
+   0.0080283,
+   0.01322542,
+   0.00793248,
+   0.00440607,
+   0.60312706,
+   0.06288956,
+   0.01113773,
+   0.00945016,
+   0.21618072
+  ]
+ },
+ {
+  "app": "WhatsApp",
+  "title": "Aile",
+  "text": "Mehmet: Kim geliyor akşam",
+  "preprocessed": "whatsapp | aile | mehmet: kim geliyor aksam",
+  "proba": [
+   0.00072371,
+   0.02804068,
+   0.96162694,
+   0.00111502,
+   0.00122451,
+   0.00048546,
+   0.00103317,
+   0.00290092,
+   0.00112815,
+   0.00073736,
+   0.00098408
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "2015in En Yıldızlı,En Çok Satan Modelleri 9.99TLden başlayan fiyatlarla tozlu.com 'da!Sms iptali içinTOZLUyaz 5306ya gonder.Mersis:0859052472300016",
+  "preprocessed": "mesajlar | | <num> in en yildizli,en cok satan modelleri <num> tlden baslayan fiyatlarla <url> 'da!sms iptali icintozluyaz <num> ya <url> rsis:08 <tel> <num>",
+  "proba": [
+   0.00222868,
+   0.00171403,
+   0.00049926,
+   0.00088979,
+   0.00053368,
+   0.00063678,
+   0.98504826,
+   0.00659157,
+   0.00063434,
+   0.00047258,
+   0.00075102
+  ]
+ },
+ {
+  "app": "Trendyol",
+  "title": "Seni özledik",
+  "text": "Bir süredir uğramadın. Yeni ürünlere göz at!",
+  "preprocessed": "trendyol | seni ozledik | bir suredir ugramadin. yeni urunlere goz at!",
+  "proba": [
+   0.00508742,
+   0.00861959,
+   0.00445628,
+   0.00678469,
+   0.00180725,
+   0.00484996,
+   0.01162655,
+   0.00289923,
+   0.01138521,
+   0.93775016,
+   0.00473365
+  ]
+ },
+ {
+  "app": "WhatsApp",
+  "title": "Deniz",
+  "text": "Seni aradı",
+  "preprocessed": "whatsapp | deniz | seni aradi",
+  "proba": [
+   0.00450393,
+   0.9170232,
+   0.03229737,
+   0.00366005,
+   0.00192158,
+   0.00435646,
+   0.00129863,
+   0.01375211,
+   0.00738093,
+   0.01175504,
+   0.00205069
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Yurtta sicakliklar, bizde fiyatlar dusuyor! Tiklayin, Kacirmayin http://goo.gl/FBulCL cikmak icin KLIKSA RET yaz 4933e yolla Mersis: 0564054884900014",
+  "preprocessed": "mesajlar | | yurtta sicakliklar, bizde fiyatlar dusuyor! tiklayin, kacirmayin <url> cikmak icin kliksa ret yaz <num> e yolla mersis: <tel> <num>",
+  "proba": [
+   0.00141653,
+   0.00481979,
+   0.00127766,
+   0.00113512,
+   0.0006797,
+   0.00104069,
+   0.97653975,
+   0.01108825,
+   0.00061671,
+   0.00085865,
+   0.00052716
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Kırk birde iş tamam olsun",
+  "preprocessed": "mesajlar | | kirk birde is tamam olsun",
+  "proba": [
+   0.00034211,
+   0.99436381,
+   0.00061823,
+   0.00033058,
+   0.00043575,
+   0.00031699,
+   0.00200125,
+   0.00043057,
+   0.00038154,
+   0.00028834,
+   0.00049083
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Dile ne istersen",
+  "preprocessed": "mesajlar | | dile ne istersen",
+  "proba": [
+   0.00029663,
+   0.99133659,
+   0.00137318,
+   0.00035299,
+   0.00034995,
+   0.00033187,
+   0.00448075,
+   0.00042331,
+   0.00027976,
+   0.00033632,
+   0.00043863
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Tam 50TL bonus! Paracard ile 50 TL'lik alisveris yaptiginiz her gune 10TL bonus,toplamda 50TL bonus! Son gun 5 Mayis. 3340'a HER yaz GONDER paracard.com.tr/5",
+  "preprocessed": "mesajlar | | tam 50tl bonus! paracard ile 50 tl'lik alisveris yaptiginiz her gune 10tl bonus,toplamda 50tl bonus! son gun 5 mayis. <num> 'a her yaz gonder <url> .tr/5",
+  "proba": [
+   0.00212692,
+   0.00434177,
+   0.00099193,
+   0.0009286,
+   0.00177355,
+   0.00229491,
+   0.96524954,
+   0.01809521,
+   0.00150151,
+   0.00087833,
+   0.00181771
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Novada Outlet Soke KIGILI'da Buyuk Panayir devam ediyor!%70+%20 indirimle Gomlek 39TL, Triko 49TL, Pantolon 49TL, Kaban 99TL, Mont 119TL, Takim Elbise 168TL",
+  "preprocessed": "mesajlar | | novada outlet soke kigili'da buyuk panayir devam ediyor!%70+%20 indirimle gomlek 39tl, triko 49tl, pantolon 49tl, kaban 99tl, mont 119tl, takim elbise 168tl",
+  "proba": [
+   0.00644151,
+   0.05303186,
+   0.00806071,
+   0.01587859,
+   0.01156402,
+   0.00478733,
+   0.86483605,
+   0.01260703,
+   0.00777797,
+   0.00841578,
+   0.00659913
+  ]
+ },
+ {
+  "app": "Telegram",
+  "title": "Kerem",
+  "text": "📎 Belge: rapor.pdf",
+  "preprocessed": "telegram | kerem | 📎 belge: rapor.pdf",
+  "proba": [
+   0.00398203,
+   0.86521762,
+   0.06153792,
+   0.01914543,
+   0.00600332,
+   0.00405058,
+   0.00510913,
+   0.01318614,
+   0.01122641,
+   0.00536634,
+   0.00517509
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Garanti ile calisin kredi dunyasinin ayricaliklarini kacirmayin! Size ozel kampanyalarimizla ilgili bilgi almak icin 4440335. Ucretsiz SMS almak istemiyorsaniz 'SMSIPTAL' yazip 3342'ye gonderebilirsiniz.Mersis:0879001756600379",
+  "preprocessed": "mesajlar | | garanti ile calisin kredi dunyasinin ayricaliklarini kacirmayin! size ozel kampanyalarimizla ilgili bilgi almak icin <num> ucretsiz sms almak istemiyorsaniz 'smsiptal' yazip <num> 'ye <url> rsis: <num>",
+  "proba": [
+   0.00029379,
+   0.00030954,
+   4.623e-05,
+   0.00019588,
+   6.791e-05,
+   0.00019733,
+   0.99810672,
+   0.00056411,
+   4.002e-05,
+   6.862e-05,
+   0.00010985
+  ]
+ },
+ {
+  "app": "Pil",
+  "title": "Pil",
+  "text": "Pil seviyesi %8. Güç tasarrufu modunu açın.",
+  "preprocessed": "pil | pil | pil seviyesi %8. guc tasarrufu modunu acin.",
+  "proba": [
+   0.00267949,
+   0.00521032,
+   0.00156037,
+   0.00395394,
+   0.00255497,
+   0.00116194,
+   0.00421255,
+   0.00199762,
+   0.00156231,
+   0.00226798,
+   0.9728385
+  ]
+ },
+ {
+  "app": "QNB",
+  "title": "Size özel",
+  "text": "Kredi kartınıza 18.750 TL'ye varan chip-para kazanma fırsatı.",
+  "preprocessed": "qnb | size ozel | kredi kartiniza <num> tl'ye varan chip-para kazanma firsati.",
+  "proba": [
+   0.01362254,
+   0.00070059,
+   0.00052643,
+   0.00186149,
+   0.00059806,
+   0.00187758,
+   0.97330305,
+   0.00523576,
+   0.00065152,
+   0.00070441,
+   0.00091858
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Pesin al, taksit taksit ode!31 Mart'a kadar olan harcamalarinizi UCRETSIZ,FAIZSIZ 4'e bolun!\"TAKSIT\" bosluk kartin son 6 hanesini 3404'e gonder! parafcard.com",
+  "preprocessed": "mesajlar | | pesin al, taksit taksit ode!31 mart'a kadar olan harcamalarinizi ucretsiz,faizsiz 4'e bolun!\"taksit\" bosluk kartin son 6 hanesini <num> 'e gonder! <url>",
+  "proba": [
+   0.00523351,
+   0.00678601,
+   0.00177357,
+   0.00326815,
+   0.00179691,
+   0.00498344,
+   0.96318703,
+   0.00707653,
+   0.0016751,
+   0.00247602,
+   0.00174373
+  ]
+ },
+ {
+  "app": "TikTok",
+  "title": "",
+  "text": "Kerem yeni bir video paylaştı",
+  "preprocessed": "tiktok | | kerem yeni bir video paylasti",
+  "proba": [
+   0.00336461,
+   0.01529499,
+   0.00627678,
+   0.00423909,
+   0.00155718,
+   0.00216425,
+   0.00194294,
+   0.00129037,
+   0.95908047,
+   0.00347662,
+   0.00131269
+  ]
+ },
+ {
+  "app": "Instagram",
+  "title": "TikTok",
+  "text": "burak_59 gönderini beğendi.",
+  "preprocessed": "instagram | tiktok | burak_59 gonderini begendi.",
+  "proba": [
+   0.00070282,
+   0.0004966,
+   0.00031037,
+   0.00050391,
+   0.00030747,
+   0.00087085,
+   0.00047642,
+   0.00042704,
+   0.99513594,
+   0.00035301,
+   0.00041558
+  ]
+ },
+ {
+  "app": "Yapı Kredi",
+  "title": "Harcama bildirimi",
+  "text": "****5136 ile biten kartınızdan Amazon işyerinde 75,90 TL harcama yapıldı.",
+  "preprocessed": "yapi kredi | harcama bildirimi | **** <num> ile biten kartinizdan amazon isyerinde <num> tl harcama yapildi.",
+  "proba": [
+   0.98448916,
+   0.00092899,
+   0.00020411,
+   0.00092775,
+   0.00027678,
+   0.00081237,
+   0.00977031,
+   0.00033179,
+   0.00090017,
+   0.00043188,
+   0.00092672
+  ]
+ },
+ {
+  "app": "WhatsApp",
+  "title": "Maç günü",
+  "text": "Derbi maçına özel 5.00 oran! Kuponunu şimdi yap bit.ly/bonus26",
+  "preprocessed": "whatsapp | mac gunu | derbi macina ozel <num> oran! kuponunu simdi yap <url>",
+  "proba": [
+   0.00064225,
+   0.00237708,
+   0.00127933,
+   0.00048403,
+   0.00047987,
+   0.0002992,
+   0.00916935,
+   0.98403026,
+   0.00047917,
+   0.000275,
+   0.00048447
+  ]
+ },
+ {
+  "app": "Outlook",
+  "title": "Ayşe",
+  "text": "Görev size atandı",
+  "preprocessed": "outlook | ayse | gorev size atandi",
+  "proba": [
+   0.00084648,
+   0.00228341,
+   0.00072214,
+   0.97934325,
+   0.01111466,
+   0.00052297,
+   0.00130995,
+   0.00069905,
+   0.00150868,
+   0.00069335,
+   0.00095606
+  ]
+ },
+ {
+  "app": "TikTok",
+  "title": "Yorum",
+  "text": "14 yeni bildirim",
+  "preprocessed": "tiktok | yorum | 14 yeni bildirim",
+  "proba": [
+   0.00054454,
+   0.00086575,
+   0.00050601,
+   0.00074925,
+   0.00027874,
+   0.00020371,
+   0.00037238,
+   0.00025727,
+   0.99532576,
+   0.00059583,
+   0.00030075
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "gnctrkcll'li Ahmet Serif Izgoren'in Avucunuzdaki Kelebek online egitim seti 50 TL yerine gncTEKLİF ile 19 TL! Hemen GNCTEKLIF.COM'a gir. satin al!",
+  "preprocessed": "mesajlar | | gnctrkcll'li ahmet serif izgoren'in avucunuzdaki kelebek online egitim seti 50 tl yerine gncteklif ile 19 tl! hemen gncteklif.com'a gir. satin al!",
+  "proba": [
+   0.01303419,
+   0.05738134,
+   0.01240423,
+   0.01623432,
+   0.0131175,
+   0.0072735,
+   0.83503939,
+   0.01364107,
+   0.00808686,
+   0.01599568,
+   0.00779193
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "KIGILI KART 4. YASINI AVANTAJLARINI 4'E KATLAYARAK KUTLUYOR. 4 GUN BOYUNCA SIZ KIGILI KART SAHIPLERINE OZEL 4 KAT PUAN! BU BUYUK FIRSAT VE INDIRIMI KACIRMAYIN!",
+  "preprocessed": "mesajlar | | kigili kart 4. yasini avantajlarini 4'e katlayarak kutluyor. 4 gun boyunca siz kigili kart sahiplerine ozel 4 kat puan! bu buyuk firsat ve indirimi kacirmayin!",
+  "proba": [
+   0.00086755,
+   0.00521978,
+   0.00250533,
+   0.00185921,
+   0.00062879,
+   0.00076051,
+   0.98226933,
+   0.00249462,
+   0.00097088,
+   0.00120884,
+   0.00121517
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Yoruldum artık. Bu dönem çok stres yaptım",
+  "preprocessed": "mesajlar | | yoruldum artik. bu donem cok stres yaptim",
+  "proba": [
+   0.00445855,
+   0.93879104,
+   0.00627592,
+   0.00368161,
+   0.00305128,
+   0.00357965,
+   0.01262186,
+   0.00373901,
+   0.01301734,
+   0.00445131,
+   0.00633244
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Yeni yilin ilk uguru karsinizda! Hesabiniza yukledigimiz birbirinden farkli kuponlari kullanin, indirimli alisverisin keyfini cikarin. n11.com/6kupon",
+  "preprocessed": "mesajlar | | yeni yilin ilk uguru karsinizda! hesabiniza yukledigimiz birbirinden farkli kuponlari kullanin, indirimli alisverisin keyfini cikarin. <url>",
+  "proba": [
+   0.01475213,
+   0.01291452,
+   0.00309376,
+   0.00334828,
+   0.00121489,
+   0.00547025,
+   0.9208811,
+   0.02419354,
+   0.00415521,
+   0.00633305,
+   0.00364327
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "İştahın nasıl İyi ya bulantı olmasın",
+  "preprocessed": "mesajlar | | istahin nasil iyi ya bulanti olmasin",
+  "proba": [
+   0.00179952,
+   0.97797982,
+   0.00184283,
+   0.00198592,
+   0.00206564,
+   0.00098765,
+   0.00763874,
+   0.00190419,
+   0.00142362,
+   0.00092654,
+   0.00144554
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Valla kaç gündür bakıyorum başım ağrıdı",
+  "preprocessed": "mesajlar | | valla kac gundur bakiyorum basim agridi",
+  "proba": [
+   0.00196316,
+   0.94273914,
+   0.00579399,
+   0.00246288,
+   0.00315882,
+   0.00174761,
+   0.02068022,
+   0.00380658,
+   0.00881851,
+   0.00229725,
+   0.00653183
+  ]
+ },
+ {
+  "app": "Android Sistemi",
+  "title": "Cihaz bakımı",
+  "text": "Pil seviyesi %19. Güç tasarrufu modunu açın.",
+  "preprocessed": "android sistemi | cihaz bakimi | pil seviyesi %19. guc tasarrufu modunu acin.",
+  "proba": [
+   0.00043292,
+   0.00089407,
+   0.00024958,
+   0.0008251,
+   0.00047254,
+   0.00021885,
+   0.00088159,
+   0.0004455,
+   0.00023595,
+   0.00032877,
+   0.99501512
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Anlayamadım neden olduğunu",
+  "preprocessed": "mesajlar | | anlayamadim neden oldugunu",
+  "proba": [
+   0.00162912,
+   0.96951998,
+   0.00294981,
+   0.00165824,
+   0.00178362,
+   0.0010465,
+   0.00974262,
+   0.0026782,
+   0.00181968,
+   0.00441278,
+   0.00275946
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "YILBASI GALA GECESi SiDE 5 YILDIZ DiAMOND BEACH RESORT HOTELDE HERSEY DAHiL KiSi BASI 4GECE 5GUN 400TL 0-12 YAS COCUK UCRETSiZ 6 TAKSiT REZERVASYON 02429010703",
+  "preprocessed": "mesajlar | | yilbasi gala gecesi side 5 yildiz diamond beach resort hotelde hersey dahil kisi basi 4gece 5gun 400tl 0-12 yas cocuk ucretsiz 6 taksit rezervasyon <num>",
+  "proba": [
+   0.00510561,
+   0.04966437,
+   0.0049315,
+   0.00577969,
+   0.00582156,
+   0.00456046,
+   0.90063463,
+   0.00775837,
+   0.0064323,
+   0.00403292,
+   0.00527859
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Hadi bakalım çok güzel haber geçmiş olsun",
+  "preprocessed": "mesajlar | | hadi bakalim cok guzel haber gecmis olsun",
+  "proba": [
+   0.00025917,
+   0.99454275,
+   0.00067492,
+   0.00035141,
+   0.00033795,
+   0.000229,
+   0.00179756,
+   0.00041175,
+   0.00034747,
+   0.00036568,
+   0.00068234
+  ]
+ },
+ {
+  "app": "Instagram",
+  "title": "",
+  "text": "nisa86 gönderine yorum yaptı: \"çok iyi 🔥\"",
+  "preprocessed": "instagram | | nisa86 gonderine yorum yapti: \"cok iyi 🔥\"",
+  "proba": [
+   0.00066436,
+   0.00327843,
+   0.00071559,
+   0.00053033,
+   0.00059543,
+   0.00086528,
+   0.00151928,
+   0.00086527,
+   0.98995806,
+   0.00041669,
+   0.00059128
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Apple sevenlere muhtesem indirim! iPad Air 16 GB Wi-Fi tablet 949 TL, iPhone 6 16 GB telefon 2249 TL. 100 TL'ye varan chip-para firsati. http://goo.gl/geJepW",
+  "preprocessed": "mesajlar | | apple sevenlere muhtesem indirim! ipad air 16 gb wi-fi tablet 949 tl, iphone 6 16 gb telefon <num> tl. 100 tl'ye varan chip-para firsati. <url>",
+  "proba": [
+   0.00078761,
+   0.00214434,
+   0.00117688,
+   0.00063154,
+   0.00066061,
+   0.00090016,
+   0.98874222,
+   0.00250331,
+   0.00072158,
+   0.00049704,
+   0.0012347
+  ]
+ },
+ {
+  "app": "TikTok",
+  "title": "Önerilen",
+  "text": "Zeynep yeni bir video paylaştı",
+  "preprocessed": "tiktok | onerilen | zeynep yeni bir video paylasti",
+  "proba": [
+   0.00144301,
+   0.00528122,
+   0.00261203,
+   0.00259857,
+   0.00083568,
+   0.00092361,
+   0.00085178,
+   0.00056931,
+   0.98252101,
+   0.00146406,
+   0.00089972
+  ]
+ },
+ {
+  "app": "Strava",
+  "title": "Hatırlatma",
+  "text": "Arkadaşların seni geçti!",
+  "preprocessed": "strava | hatirlatma | arkadaslarin seni gecti!",
+  "proba": [
+   0.00132044,
+   0.00934388,
+   0.00436448,
+   0.00180404,
+   0.01115951,
+   0.00127079,
+   0.00532099,
+   0.00191532,
+   0.00180962,
+   0.95958871,
+   0.00210222
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "Kazan",
+  "text": "Çevrimsiz 100 free spin hesabına tanımlandı! https://tinyurl.com/y8b2",
+  "preprocessed": "mesajlar | kazan | cevrimsiz 100 free spin hesabina tanimlandi! <url>",
+  "proba": [
+   0.00096764,
+   0.00209299,
+   0.0004649,
+   0.00075687,
+   0.00028513,
+   0.00043706,
+   0.00579318,
+   0.98793135,
+   0.00027509,
+   0.00053389,
+   0.00046189
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Aqlamak Cok Güzel. Gözyasini Silen varsa.Gülmek cok qüzel. Seninle qülen varsa.Yasamak cok Güzel Umudun varsa. Ama uyumak hepsinden qüzel kus tüyü yastigin varsa=) iyi geceler Allah rahatlik wersin kuzum..",
+  "preprocessed": "mesajlar | | aqlamak cok guzel. gozyasini silen varsa.gulmek cok quzel. seninle qulen varsa.yasamak cok guzel umudun varsa. ama uyumak hepsinden quzel kus tuyu yastigin varsa=) iyi geceler allah rahatlik wersin kuzum..",
+  "proba": [
+   0.00553627,
+   0.81532348,
+   0.00903101,
+   0.00678495,
+   0.00513583,
+   0.00519803,
+   0.11428014,
+   0.00668689,
+   0.01177931,
+   0.01207879,
+   0.0081653
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Yeni Apple MacBook Pro kazanma sansi Internet Subesi'nde! Bugun Internet Subesi'ne girin bu firsati kacirmayin.",
+  "preprocessed": "mesajlar | | yeni apple macbook pro kazanma sansi internet subesi'nde! bugun internet subesi'ne girin bu firsati kacirmayin.",
+  "proba": [
+   0.01148242,
+   0.01985071,
+   0.00930872,
+   0.00541218,
+   0.0077477,
+   0.00499988,
+   0.88116496,
+   0.0335128,
+   0.01027914,
+   0.01207933,
+   0.00416218
+  ]
+ },
+ {
+  "app": "Pegasus",
+  "title": "Ders",
+  "text": "Bugün 14:30: proje toplantısı",
+  "preprocessed": "pegasus | ders | bugun 14:30: proje toplantisi",
+  "proba": [
+   0.00050494,
+   0.00238518,
+   0.00303811,
+   0.00373974,
+   0.98397482,
+   0.00056974,
+   0.00191061,
+   0.00076529,
+   0.00110202,
+   0.00102362,
+   0.00098592
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Kampanya: Money Bonus kredi kartinla farkli gunlerde ve tek seferde ucuncu 100 TL alisverisine 30 MONEY hediye, 10 Aralik 2015-10 Ocak 2016 Migros ve Macrocenter'da! Henuz kayit olmadiysan ilk alisveristen once MARKET yaz, 3340a gonder! Bilgi:4441044. ",
+  "preprocessed": "mesajlar | | kampanya: money bonus kredi kartinla farkli gunlerde ve tek seferde ucuncu 100 tl alisverisine 30 money hediye, 10 aralik <num> -10 ocak <num> migros ve macrocenter'da! henuz kayit olmadiysan ilk alisveristen once market yaz, <num> a gonder! bilgi: <num>",
+  "proba": [
+   0.00263159,
+   0.00135234,
+   0.00038318,
+   0.00054834,
+   0.00087029,
+   0.00143988,
+   0.98786947,
+   0.00309244,
+   0.00044187,
+   0.00089604,
+   0.00047457
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "307779143 takip numaralı gönderiniz dağıtıma çıkmıştır.",
+  "preprocessed": "mesajlar | | <num> takip numarali gonderiniz dagitima cikmistir.",
+  "proba": [
+   0.00287842,
+   0.0116176,
+   0.00052787,
+   0.00143541,
+   0.00097976,
+   0.97178891,
+   0.0080253,
+   0.00072225,
+   0.00127487,
+   0.00023352,
+   0.00051609
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Sonra bakayım",
+  "preprocessed": "mesajlar | | sonra bakayim",
+  "proba": [
+   0.00028803,
+   0.99186567,
+   0.00119946,
+   0.00026701,
+   0.00201221,
+   0.00047798,
+   0.00208098,
+   0.0007143,
+   0.00035861,
+   0.00024729,
+   0.00048846
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "İnternet ücreti ödemeden Turkcell Müzik'ten milyonlarca şarkıyı UCRETSIZ dinlemek için DINLE yazıp 2222 ye gönderin!",
+  "preprocessed": "mesajlar | | internet ucreti odemeden turkcell muzik'ten milyonlarca sarkiyi ucretsiz dinlemek icin dinle yazip <num> ye gonderin!",
+  "proba": [
+   0.00675051,
+   0.01213063,
+   0.00189367,
+   0.00176959,
+   0.00171643,
+   0.00627742,
+   0.95982403,
+   0.00338932,
+   0.00223864,
+   0.00171058,
+   0.00229918
+  ]
+ },
+ {
+  "app": "Mesajlar",
+  "title": "",
+  "text": "Altinyildiz Classics'te 75 Paracik'a kadar kazan! Kampanya detay: http://goo.gl/RH0FWQ SMS almak istemiyorsaniz RET HOPI yazip 3347'ye gonderin. Mersis No: 0335041279900014",
+  "preprocessed": "mesajlar | | altinyildiz classics'te 75 paracik'a kadar kazan! kampanya detay: <url> sms almak istemiyorsaniz ret hopi yazip <num> 'ye gonderin. mersis no: 033 <tel> 014",
+  "proba": [
+   0.00071234,
+   0.00147581,
+   0.00057895,
+   0.00080414,
+   0.00047882,
+   0.00119169,
+   0.98851604,
+   0.00456231,
+   0.00050374,
+   0.00054457,
+   0.0006316
+  ]
+ }
+]

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 26 Kasım'da teslim bildirimi için; Android 13+ çalışma zamanında istenecek. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Rahatsız Etmeyin öncelik modu (kullanıcı ayrıca "Rahatsız Etmeyin erişimi" verir). -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- Kritik/Önemli titreşimi. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 5 sn bekleme ekran kapalıyken de 5 sn sürsün (bekleme boyunca kısa PARTIAL_WAKE_LOCK). -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Yeniden başlatmadan sonra teslim saatlerini yeniden kurmak için. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Kurulum sihirbazı: pil optimizasyonu muafiyeti (Samsung arka planda kapatıyor). -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Uygulama adlarını ve ana ekranlarını bulabilmek için (Android 11+ paket görünürlüğü). -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".SuzgecApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Suzgec">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".listener.SuzgecListener"
+            android:exported="false"
+            android:label="@string/listener_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Günde 3 teslim -->
+        <receiver
+            android:name=".delivery.DeliveryReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".delivery.RescheduleReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

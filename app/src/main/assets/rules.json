@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "_aciklama": "Süzgeç kural katmanı (CLAUDE.md §5). Regex'ler Java sözdizimi, (?U) ile Unicode'a duyarlı çalışır. Kumar ve güvenlik kuralları küçük harfe çevrilmiş ve ASCII'ye katlanmış (ş→s, ı→i, ğ→g, ü→u, ö→o, ç→c) metne uygulanır.",
+
+  "dokunma": {
+    "_aciklama": "1. adım: hiç dokunma, kutuya da alma.",
+    "kategoriler": ["call", "alarm", "navigation", "progress", "transport", "service", "sys", "stopwatch"],
+    "paketler": [
+      "android",
+      "com.android.systemui",
+      "com.android.phone",
+      "com.android.server.telecom",
+      "com.android.dialer",
+      "com.google.android.dialer",
+      "com.android.deskclock",
+      "com.google.android.deskclock",
+      "com.samsung.android.incallui",
+      "com.samsung.android.dialer",
+      "com.sec.android.app.clockpackage"
+    ],
+    "paket_icerir": ["cellbroadcast"]
+  },
+
+  "bekleme": {
+    "_aciklama": "2. adım: timeoutAfter bu eşiğin altındaysa ya da bildirimin kategorisi yoksa bu kadar bekle; bu sürede kalkarsa hiçbir şey yapma.",
+    "sure_ms": 5000,
+    "timeout_esik_ms": 5000
+  },
+
+  "gizli_icerik": {
+    "_aciklama": "4. adım: Android 15+ tek kullanımlık kodları dinleyiciden gizler; gizlenmiş içerik Kritik sayılır. Küçük harfe çevrilmiş metinde aranır.",
+    "ifadeler": [
+      "sensitive notification content hidden",
+      "hassas bildirim içeriği gizlendi",
+      "hassas bildirim içeriği gizli",
+      "hassas içerik gizlendi"
+    ]
+  },
+
+  "guvenlik": {
+    "_aciklama": "4. adım: ml/guvenlik_kurali.py ile birebir aynı. Ön işlenmiş (Preprocess.onIsle) metne uygulanır: SEC eşleşir ve NEG eşleşmezse tür 1 (Kritik).",
+    "sec": "((dogrulama|onay|guvenlik|tek kullanimlik|giris)\\s*(kod|sifre)|(kod|sifre)(u|si|niz|nuz|unuz|iniz)?\\s*[:=]?\\s*(<num>|\\d{4,8})(?!\\d)|<num>\\s*(dogrulama|onay)|hesab\\w*\\s*(dan|den|a|e)?\\s*.{0,25}(cekil|yatiril|gonderil|gonderdi|tahsil)|tahsil edil|harcama yapildi|islem(i|iniz)? (yapildi|gerceklesmedi|engellendi)|(yeni|farkli) (bir )?cihaz\\w*.{0,15}(giris|oturum)|(giris|oturum) (yapildi|yapilmistir|acildi)|sifre\\w* (degistirildi|blokelen|sifirla)|guvenlik (bilgi|uyari)|numaraniz degistirildi|limit\\w* dol|ekstre borcu|asgari (odeme|borc)|toplam borcu|<num> [^.|]{0,30}(sifre|kod)\\w*dir|kimseyle paylasma)",
+    "neg": "(indirim|kampanya|firsat|hediye|kazan|taksit|bonus|ozel|promosyon|cekilis|kredi(nizi)? (al|teklif))"
+  },
+
+  "kumar": {
+    "_aciklama": "5. adım: kumar filtresi açıkken eşleşen bildirim Silinenler'e gider (tür 8). Tek başına yeten güçlü ifadeler ve birlikte geçmesi gereken zayıf ifade grupları ayrı. 'bonus', 'kazan', 'yatır', 'oran' tek başına YETMEZ: Bonus kart kampanyaları ve maaş yatırıldı bildirimleri kumar sayılmamalı (ml/README.md).",
+    "guclu": [
+      "\\bcasino",
+      "\\bkumarhane",
+      "\\bslot(lar\\w*)?\\b",
+      "\\brulet",
+      "\\bpoker",
+      "\\bblackjack",
+      "\\bjackpot",
+      "\\bfree ?spin",
+      "\\b(bedava|ucretsiz) (spin|cevirme)",
+      "\\bcevrimsiz\\b",
+      "\\bcanli bahis",
+      "\\bbahis",
+      "\\biddaa",
+      "\\bdeneme bonus",
+      "\\bkombine kupon",
+      "\\bfree ?bet",
+      "\\b(yatirim|yatirimsiz|kayip|hos ?geldin|kayit) bonus",
+      "\\b[a-z]{2,}bet\\d*\\s*(yeni\\s*)?(giris|adres)",
+      "\\b[a-z]{2,}bet\\d+\\b"
+    ],
+    "siteler": ["betxx", "kazanbet", "sekabet", "jojobet", "casinomaxi", "tipobet", "matadorbet", "superbetin", "bets10", "mobilbahis", "youwin", "betboo", "1xbet", "betist"],
+    "birlikte": [
+      ["\\bbonus", "(bit\\.ly|t\\.ly|tinyurl|cutt\\.ly|shorturl|rb\\.gy|is\\.gd|t\\.co/|goo\\.gl|tiny\\.cc|s\\.id/)"],
+      ["\\bbonus", "\\byatir"],
+      ["\\b(yuksek|super|dev|ozel|artirilmis|canli) oran", "\\b(mac|maclar|kupon|bahis)\\b"],
+      ["\\bkazan", "\\bspin"],
+      ["\\bgazino", "(gazino\\w*\\.com|\\bkazan|\\bbonus|\\bgiris)"]
+    ],
+    "model_istisna": {
+      "_aciklama": "Metin modeli 'kumar' dese bile bu ifadeler varsa bildirim Silinenler'e gitmez, önem puanıyla kategorilenir. Model 'Bonus' kart kampanyalarını kumarla karıştırıyor (ml/README.md; demo 18: p(kumar)=0,71). Sözlükteki güçlü kumar ifadeleri bu istisnadan önce gelir.",
+      "ifadeler": [
+        "\\bbonus ?(kart|flas|card|plus|premium|genc|trink|business)",
+        "\\bbonus'?(lu|li)\\b"
+      ]
+    }
+  },
+
+  "rezervasyon": {
+    "_aciklama": "YTÜ çalışma salonu rezervasyonları kaçmasın (25 Kasım, kullanıcı istedi) → Önemli. Güvenlik ve kumardan sonra, Panelde bırak / toplu kutlama / öncelikli uygulama / kampanyadan önce. Katlanmış metne (bağlantılar korunur) uygulanır. Eşleşme: (gönderen/başlık ytu ve metinde rezervasyon) ya da alan_adi ya da (rezervasyon + yaninda ifadelerinden biri).",
+    "gonderen": "(\\by\\.?\\s?t\\.?\\s?u\\b|\\byildiz teknik)",
+    "kelime": "\\brezervasyon",
+    "alan_adi": "(yildiz\\.edu\\.tr|ktprezervasyon)",
+    "yaninda": "\\b(iptal|hatirlatma|giris|qr)"
+  },
+
+  "kutlama": {
+    "_aciklama": "Toplu kutlama mesajı → Önemsiz (öncelikli uygulamadan önce). Gönderen kurum/toplu gönderici (SenderHeuristics: harf ağırlıklı, küçük harfsiz ad) VE bu ifadelerden biri. Katlanmış (ASCII) metne uygulanır.",
+    "ifadeler": ["\\bkutluyorum", "\\bkutlarim\\b", "\\bkutlariz\\b", "\\bkutlu olsun", "\\bgunu(nuz|muz)? kutlu", "\\bbayram\\w*", "\\bsaygilarimla", "\\bsevgi ve saygi\\w*"]
+  },
+
+  "oncelikli_kampanya": {
+    "_aciklama": "Öncelikli uygulama kararı kampanyayı geçirmez: model tür 7 (olasılık ≥ model_esik) ya da guvenlik.neg eşleşirse Önemsiz. Kişiden gelen sohbet mesajlarına (MessagingStyle, kurum olmayan gönderen) uygulanmaz. Eşik 0,70: Y.T.U rezervasyon SMS'inde model %50 kampanya diyordu (24 Kasım); açık kampanyaları NEG ifadeleri zaten yakalıyor.",
+    "model_esik": 0.7
+  },
+
+  "haber": {
+    "_aciklama": "Haber uygulamaları → Önemsiz (öncelikli uygulamadan sonra). ApplicationInfo.category == CATEGORY_NEWS olanlar da sayılır.",
+    "paketler": ["com.dwarfplanet.bundle", "com.haberturk", "com.sozcu.android", "com.hurriyet.android", "com.milliyet", "com.sabah", "com.ntv.ntvapp", "com.cnnturk", "tr.com.aa.android", "com.trthaber", "com.google.android.apps.magazines", "flipboard.app"]
+  },
+
+  "eposta": {
+    "_aciklama": "E-posta uygulamalarında başlık (gönderen) bu ifadelerden birini içerirse → Önemsiz.",
+    "paketler": ["com.microsoft.office.outlook", "com.google.android.gm", "com.samsung.android.email.provider", "com.yahoo.mobile.client.android.mail", "ch.protonmail.android", "ru.yandex.mail"],
+    "onemsiz_gonderen": ["\\blinkedin\\b", "\\byouthall\\b"],
+    "_onemli_aciklama": "Başlık ya da metinde (katlanmış) bu ifadelerden biri geçen e-posta → Önemli (25 Kasım; 24.11'de bir şirketin video mülakat maili Normal kalmıştı). LinkedIn/Youthall gönderen kuralından önce çalışır.",
+    "onemli_ifadeler": ["\\bmulakat", "\\bgorusme davet", "\\binterview", "\\bdegerlendirme sureci"]
+  },
+
+  "alisveris": {
+    "_aciklama": "Alışveriş filtresi YALNIZ bu uygulamalara uygulanır. Diğer uygulamalardaki kampanyalar Önemsiz'e düşer, silinmez.",
+    "paketler": ["trendyol.com", "com.pozitron.hepsiburada", "com.amazon.mShop.android.shopping", "com.dmall.mfandroid", "com.einnovation.temu", "com.zzkko", "com.getir", "com.yemeksepeti.android", "com.inomera.sm", "com.migros.sanalmarket", "tr.com.migros.money", "com.ciceksepeti.ciceksepeti", "com.alibaba.aliexpresshd", "com.lcwaikiki.android", "com.boyner.android", "com.a101.app", "com.koton.android", "com.defacto.android", "com.flo.android"]
+  },
+
+  "sosyal": {
+    "_aciklama": "Sosyal medya filtresi YALNIZ bu uygulamalara uygulanır (LinkedIn dahil değil).",
+    "paketler": ["com.instagram.android", "com.instagram.lite", "com.zhiliaoapp.musically", "com.ss.android.ugc.trill", "com.twitter.android", "com.twitter.android.lite", "com.facebook.katana", "com.facebook.lite", "com.snapchat.android"]
+  },
+
+  "grup_anahtar": {
+    "_aciklama": "Grup sohbeti mesajında (yalnız mesaj metni, katlanmış) bu ifadelerden biri ya da kullanıcının adı geçerse → Önemli. 'toplam' bilerek yok (yanlış alarm).",
+    "ifadeler": ["\\btoplanti\\w*", "\\btoplan(alim|iyoruz|acagiz)\\b", "\\bacil\\b", "\\bsinav\\w*", "\\bodev\\w*", "\\bteslim\\w*", "\\biptal\\w*", "\\bertelendi\\b"]
+  },
+
+  "telegram": {
+    "_aciklama": "Telegram kanal gönderileri birebir sohbet değildir, modele gider. İşaret (biri yeter): bildirim kanalı '_channels_' içerir, kısayol kimliği 'ndid_-' ile başlar (kanal diyalog kimliği negatif), ya da bildirimde yanıt (RemoteInput) eylemi yoktur.",
+    "paketler": ["org.telegram.messenger", "org.telegram.messenger.web", "org.telegram.plus", "org.thunderdog.challegram"],
+    "kanal_icerir": "_channels_",
+    "kisayol_kanal_onek": "ndid_-"
+  }
+}

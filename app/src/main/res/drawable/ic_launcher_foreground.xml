@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Süzgeç simgesi: üstten damlalar (bildirimler) huniye düşer, alttan tek damla çıkar. Güvenli alan: 66×66 dp merkez. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Huniye düşen bildirimler -->
+    <path android:fillColor="#9FE3D9"
+        android:pathData="M42,27 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path android:fillColor="#9FE3D9"
+        android:pathData="M54,24 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <path android:fillColor="#9FE3D9"
+        android:pathData="M66,27 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+    <!-- Huni -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M30,35 L78,35 Q80,35 78.6,37 L60,58 L60,73 Q60,75 58.2,75.9 L50.4,79.6 Q48,80.6 48,78 L48,58 L29.4,37 Q28,35 30,35 Z" />
+    <!-- Süzgeç teli -->
+    <path android:fillColor="#1B5E58"
+        android:pathData="M36,41 L72,41 L69.5,44 L38.5,44 Z" />
+    <!-- Süzülüp geçen tek bildirim -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M54,86 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+</vector>

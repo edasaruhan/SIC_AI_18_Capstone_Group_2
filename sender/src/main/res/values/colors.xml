@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Demo Gönderici: amber (Süzgeç'in yeşilinden ayrı) -->
+    <color name="ic_launcher_background">#F57C00</color>
+</resources>

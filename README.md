@@ -78,7 +78,7 @@ Gerçek kullanımda bulunan hatalar (ör. haber bildirimlerinin titretmesi, bir 
 | Ana metin modeli | turkish-mini-bert (LiteRT) | TF-IDF + LR (JSON + Kotlin) | Gerçek SMS'te daha iyi, 12 kat küçük, ~5 kat hızlı (5. ödev, 3.3) |
 | Bağlam bilgisi | Puan formülünde ağırlıklı terim | Kural katmanı (Android bayrakları, sohbet türü, uygulama listeleri) | Kesin bilinen durumda modele karar bırakılmadı; kararların %43,5'i kuraldan |
 | Sıralama öğrenmesi | LightGBM sıralama modeli | Sürükleme çiftlerinden sıra puanı | Az veride basit, anında etkili ve geri alınabilir |
-| SMS/e-posta uygulamasından silme (2. aşama) | Bildirim eylem butonlarıyla | Yapılmadı | Kişisel telefonda başka uygulamanın verisine dokunmamak için bilinçli karar |
+| SMS/e-posta uygulamasından silme (2. aşama) | Bildirim eylem butonlarıyla | 1.0'da yok; deneysel emülatör demosu var | Kişisel telefonda başka uygulamanın verisine dokunmamak için 1.0'a alınmadı; kullanıcı onaylı silme, sahte gelen kutusuyla emülatörde gösterildi ([`release/deneysel_emulator_silme/`](release/deneysel_emulator_silme/README.md)) |
 | Ekran süresi, geçiş analizi, süre sınırı (3. aşama) | Sonraki aşama | Yapılmadı | Kapsam: demo 1. aşama |
 
 ### Teslim dosyaları / Deliverables
@@ -106,6 +106,7 @@ Android emülatöründe, demo göndericinin sahte bildirimleriyle alındı (ger�
 ### Uygulamayı kurmak ve denemek
 
 - **Hazır APK:** [`release/Suzgec-1.0.apk`](release/Suzgec-1.0.apk) (imzalı sürüm, Android 8.0+). Telefonda "bilinmeyen kaynaklardan yükleme" izni gerekir.
+- **Deneysel silme demosu (yalnız emülatör):** [`release/deneysel_emulator_silme/`](release/deneysel_emulator_silme/README.md). Kullanıcı onayıyla kumar mesajını gönderen uygulamanın kutusundan da silen ayrı bir debug derleme; yalnız kendi sahte gelen kutusuyla çalışır, SMS izni yoktur. Uyarılar, kurulum adımları ve kaynak kodu o klasörde.
 - **Kurulum sihirbazı** sırasıyla bildirim erişimi, Rahatsız Etmeyin erişimi ve pil optimizasyonu muafiyeti ister; teslim saatlerini ve görmek istemediğin içerikleri (kumar varsayılan açık) seçtirir. Samsung telefonlarda Süzgeç'in pil ayarı "Kısıtlanmamış" olmalıdır.
 - **Duraklat:** Ayarlar'daki "Süzgeç'i duraklat" telefonun önceki ses ve Rahatsız Etmeyin ayarını geri yükler.
 - **Kaynaktan derleme:** Android Studio ile `app/` modülünü açın; `gradlew assembleDebug`. Testler: `gradlew :app:testDebugUnitTest` (103 birim testi; Python–Kotlin model eşliği dahil).
@@ -122,7 +123,7 @@ Android emülatöründe, demo göndericinin sahte bildirimleriyle alındı (ger�
 ├── sender/              # Demo bildirim gönderici
 ├── ml/                  # Sentetik veri, eğitim, değerlendirme, JSON dışa aktarma (Python)
 ├── docs/                # Demo senaryosu, demo sonuçları, bilinen sınırlar
-└── release/             # İmzalı Süzgeç 1.0 APK
+└── release/             # İmzalı Süzgeç 1.0 APK; deneysel_emulator_silme/ (yalnız emülatör demosu)
 ```
 Geliştirici belgesi (modüller, karar akışı, veri modeli, model, testler): [`docs/mimari.md`](docs/mimari.md)
 Sürüm notları (0.1 → 1.0): [`docs/surum_notlari.md`](docs/surum_notlari.md)
@@ -130,7 +131,7 @@ Sürüm notları (0.1 → 1.0): [`docs/surum_notlari.md`](docs/surum_notlari.md)
 ### Veri ve gizlilik / Data and privacy
 
 - Bütün sınıflandırma telefonda yapılır; bildirim metni telefondan çıkmaz. Gönderen kimliği SHA-256 karmasıyla saklanır; "Verileri dışa aktar" CSV'si bildirim metni ve başlığı içermez.
-- Süzgeç başka uygulamaların içinde hiçbir şeyi silmez; yalnız bildirimi panelden kaldırır ve kendi kayıtlarını tutar.
+- Süzgeç 1.0 başka uygulamaların içinde hiçbir şeyi silmez; yalnız bildirimi panelden kaldırır ve kendi kayıtlarını tutar. (Deneysel emülatör derlemesi yalnız kendi demo gönderici uygulamasının sahte kutusunu siler.)
 - Belgelerdeki gerçek kullanım sonuçları yalnız toplu sayılardır; kişi adı, mesaj metni ya da gönderen kurum adı yer almaz. Örnekler demo senaryosundaki sahte bildirimlerdir.
 - Üçüncü taraf veri setleri (TurkishSMSCollection, Uysal ve ark. 2013, Komninos ve ark.) bu depoya eklenmemiştir; kaynakları ve lisansları 2. ödevin Part 2 bölümündedir.
 
@@ -158,11 +159,11 @@ Destek: Yeşilay Danışmanlık Merkezi (YEDAM) **115**.
 
 **Results:** template-family-out macro F1 0.852; hand-written notifications macro F1 0.903 (0.962 over 5 categories with the security rule, Critical 15/15); real SMS (Uysal 2013, unseen) campaign recall 0.989 with 0/364 campaigns mistaken for gambling. A small Turkish BERT was slightly better on clean text but clearly worse on real SMS, 12× larger and ~5× slower, so the app ships the linear model. On a real phone (Galaxy M51, Android 12, 26.9 h of daily use) Süzgeç classified 69 notifications and silenced **56.5%** of them (target ≥ 50%); the rule layer decided 43.5%; all sound-mode, pause, reboot, alarm and call checks passed, and real gambling messages from friends were removed with no false alarms on control messages.
 
-**Planned → delivered:** turkish-mini-bert → TF-IDF + LR (better on real SMS, smaller, faster); context term → rule layer; LightGBM ranking → drag-pair order score; deleting messages inside SMS/e-mail apps and the stage-3 wellbeing features (screen time, app-transition analysis, usage limits) were not built in this version.
+**Planned → delivered:** turkish-mini-bert → TF-IDF + LR (better on real SMS, smaller, faster); context term → rule layer; LightGBM ranking → drag-pair order score; deleting messages inside SMS/e-mail apps is not in 1.0 (shown only as an opt-in, emulator-only experimental build with a fake inbox: [`release/deneysel_emulator_silme/`](release/deneysel_emulator_silme/README.md)); the stage-3 wellbeing features (screen time, app-transition analysis, usage limits) were not built in this version.
 
-**Install:** [`release/Suzgec-1.0.apk`](release/Suzgec-1.0.apk) (signed, Android 8.0+). The setup wizard asks for notification access, Do Not Disturb access and a battery-optimisation exemption. Build from source with Android Studio (`gradlew assembleDebug`); run tests with `gradlew :app:testDebugUnitTest` (103 unit tests). Retrain the model in `ml/`.
+**Install:** [`release/Suzgec-1.0.apk`](release/Suzgec-1.0.apk) (signed, Android 8.0+). The setup wizard asks for notification access, Do Not Disturb access and a battery-optimisation exemption. Build from source with Android Studio (`gradlew assembleDebug`); run tests with `gradlew :app:testDebugUnitTest` (103 unit tests). Retrain the model in `ml/`. Experimental emulator-only deletion demo: [`release/deneysel_emulator_silme/`](release/deneysel_emulator_silme/README.md).
 
-**Privacy:** all processing is on the phone; notification text never leaves it; senders are stored as SHA-256 hashes; the CSV export contains no notification text. Süzgeč never deletes anything inside other apps. Real-use results in the documents are aggregate counts only. Third-party datasets are not redistributed (sources and licences: deliverable 2, Part 2).
+**Privacy:** all processing is on the phone; notification text never leaves it; senders are stored as SHA-256 hashes; the CSV export contains no notification text. Süzgeç 1.0 never deletes anything inside other apps (the experimental emulator build only clears its own demo sender's fake inbox). Real-use results in the documents are aggregate counts only. Third-party datasets are not redistributed (sources and licences: deliverable 2, Part 2).
 
 Support: Yeşilay Counselling Centre (YEDAM) **115**.
 

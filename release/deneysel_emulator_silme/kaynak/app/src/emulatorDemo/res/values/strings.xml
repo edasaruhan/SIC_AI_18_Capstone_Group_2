@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- emulatorDemo varyantı: standart Süzgeç'ten ayırt edilsin. -->
+    <string name="app_name">Süzgeç (emülatör demo)</string>
+</resources>

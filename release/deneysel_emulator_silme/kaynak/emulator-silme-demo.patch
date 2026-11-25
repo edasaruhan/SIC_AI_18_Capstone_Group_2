@@ -1,0 +1,742 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index 79f6ec0..e4c42b0 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -35,6 +35,22 @@ android {
+         versionName = "1.0"
+     }
+ 
++    // Dağıtım boyutu (25 Kasım, emulator-silme-demo dalı; CLAUDE.md §0 teknik kilit):
++    // standart = M51 ve release (varsayılan); emulatorDemo = yalnız emülatörde "uygulamadan da sil" demosu.
++    // emulatorDemo kodu YALNIZ src/emulatorDemo/ altında; standart APK'ya girmez.
++    flavorDimensions += "dagitim"
++    productFlavors {
++        create("standart") {
++            dimension = "dagitim"
++            isDefault = true
++        }
++        create("emulatorDemo") {
++            dimension = "dagitim"
++            applicationIdSuffix = ".emulatordemo"
++            versionNameSuffix = "-emulatorDemo"
++        }
++    }
++
+     buildTypes {
+         release {
+             isMinifyEnabled = false
+diff --git a/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/EmulatorInAppDelete.kt b/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/EmulatorInAppDelete.kt
+new file mode 100644
+index 0000000..6eb945b
+--- /dev/null
++++ b/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/EmulatorInAppDelete.kt
+@@ -0,0 +1,98 @@
++package com.suzgec.app.emulatordemo
++
++import android.content.Context
++import android.service.notification.StatusBarNotification
++import android.util.Log
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.Switch
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.platform.LocalContext
++import androidx.compose.ui.unit.dp
++import com.suzgec.app.DeviceKind
++import com.suzgec.app.SuzgecApp
++import com.suzgec.app.listener.InAppDeleteHook
++import com.suzgec.app.rules.Decision
++import java.util.concurrent.ConcurrentHashMap
++
++private const val TAG = "SuzgecDemo"
++private const val PREFS = "emulator_demo"
++private const val KEY_ENABLED = "uygulamadan_sil"
++
++/** Kayda yazılan neden eki; Silinenler'de "Neden burada?" satırında görünür. */
++const val DELETED_IN_APP_SUFFIX = " · Uygulamadan da silindi (demo)"
++
++/**
++ * emulatorDemo: kumar kararıyla Silinenler'e giden Demo Gönderici bildiriminin "Sil" eylemini bir kez tetikler.
++ * Demo Gönderici yalnız KENDİ sahte gelen kutusundan o kaydı siler. Kilitler: [InAppDeletePolicy].
++ */
++object EmulatorInAppDelete : InAppDeleteHook {
++    private val fired: MutableSet<String> = ConcurrentHashMap.newKeySet()
++    private val emulator: Boolean by lazy { DeviceKind.isEmulator() }
++
++    private fun prefs(ctx: Context) = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
++    fun isEnabled(ctx: Context): Boolean = prefs(ctx).getBoolean(KEY_ENABLED, false)
++
++    override val hasSettings: Boolean get() = true
++
++    @Composable
++    override fun SettingsContent() {
++        val ctx = LocalContext.current
++        var on by remember { mutableStateOf(emulator && isEnabled(ctx)) }
++        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
++            Column(Modifier.weight(1f).padding(end = 12.dp)) {
++                Text("Uygulamadan da sil (deneme)", style = MaterialTheme.typography.titleMedium)
++                Text(
++                    if (emulator) "Yalnız emülatör demosu: kumar bildirimi Silinenler'e gidince Demo Gönderici'nin " +
++                        "sahte gelen kutusundan da silinir. Başka hiçbir uygulamaya dokunulmaz."
++                    else "Gerçek cihaz: devre dışı.",
++                    style = MaterialTheme.typography.bodySmall,
++                    color = MaterialTheme.colorScheme.onSurfaceVariant,
++                )
++            }
++            Switch(
++                checked = on,
++                enabled = emulator,
++                onCheckedChange = {
++                    on = it
++                    prefs(ctx).edit().putBoolean(KEY_ENABLED, it).apply()
++                    Log.i(TAG, "Uygulamadan da sil (deneme): ${if (it) "açık" else "kapalı"}")
++                },
++            )
++        }
++    }
++
++    override suspend fun onDecided(context: Context, sbn: StatusBarNotification, decision: Decision) {
++        val actions = sbn.notification.actions.orEmpty()
++        val r = InAppDeletePolicy.decide(
++            packageName = sbn.packageName,
++            actionTitles = actions.map { it.title?.toString() },
++            category = decision.category,
++            contentType = decision.contentType,
++            isEmulator = emulator,
++            enabled = isEnabled(context),
++            alreadyFired = sbn.key in fired,
++        )
++        when (r.verdict) {
++            InAppDeletePolicy.Verdict.GERCEK_CIHAZ -> Log.w(TAG, "gerçek cihaz: devre dışı")
++            InAppDeletePolicy.Verdict.SIL -> {
++                fired.add(sbn.key)
++                actions[r.actionIndex].actionIntent.send()
++                Log.i(TAG, "uygulamadan_silindi: ${sbn.packageName} | ${decision.rule} | ${sbn.key}")
++                (context.applicationContext as SuzgecApp).database.notificationDao()
++                    .setDecisionText(sbn.key, decision.reason + DELETED_IN_APP_SUFFIX, decision.rule)
++            }
++            else -> Log.i(TAG, "Uygulamadan silme yok: ${r.verdict} (${sbn.packageName}, ${decision.category.label})")
++        }
++    }
++}
+diff --git a/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicy.kt b/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicy.kt
+new file mode 100644
+index 0000000..03121b9
+--- /dev/null
++++ b/app/src/emulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicy.kt
+@@ -0,0 +1,47 @@
++package com.suzgec.app.emulatordemo
++
++import com.suzgec.app.rules.Category
++
++/**
++ * "Uygulamadan da sil" demosunun saf karar kuralı (birim testli; yalnız emulatorDemo varyantında).
++ *
++ * Üç kilit:
++ * 1. Hedef: paket adı TAM OLARAK [ALLOWED_PACKAGES] içindeki tek paket (Demo Gönderici) ve başlığı [ACTION_TITLE]
++ *    olan bildirim eylemi. Başka hiçbir paket için kod yolu yok.
++ * 2. Varyant: bu kod yalnız `src/emulatorDemo/` altında (standart APK'da bu sınıf yok).
++ * 3. Çalışma zamanı: emülatör değilse ya da Ayarlar'daki anahtar kapalıysa hiçbir şey yapılmaz.
++ * Ayrıca yalnız kumar kararı (Silinenler + içerik türü 8) tetikler; her bildirim için en fazla bir kez.
++ */
++object InAppDeletePolicy {
++    /** İzin listesi: tek eleman. Testle sabitlenmiştir. */
++    val ALLOWED_PACKAGES: Set<String> = setOf("com.suzgec.sender")
++
++    /** Tetiklenebilecek tek eylem başlığı. */
++    const val ACTION_TITLE = "Sil"
++
++    /** Model / kural içerik türü: kumar (CLAUDE.md §6, tür 8). */
++    const val GAMBLING_TYPE = 8
++
++    enum class Verdict { SIL, GERCEK_CIHAZ, KAPALI, IZINSIZ_PAKET, KUMAR_DEGIL, EYLEM_YOK, ZATEN_SILINDI }
++
++    data class Result(val verdict: Verdict, val actionIndex: Int = -1)
++
++    fun decide(
++        packageName: String,
++        actionTitles: List<String?>,
++        category: Category,
++        contentType: Int?,
++        isEmulator: Boolean,
++        enabled: Boolean,
++        alreadyFired: Boolean,
++    ): Result {
++        if (!isEmulator) return Result(Verdict.GERCEK_CIHAZ)
++        if (!enabled) return Result(Verdict.KAPALI)
++        if (packageName !in ALLOWED_PACKAGES) return Result(Verdict.IZINSIZ_PAKET)
++        if (category != Category.SILINENLER || contentType != GAMBLING_TYPE) return Result(Verdict.KUMAR_DEGIL)
++        val idx = actionTitles.indexOfFirst { it == ACTION_TITLE }
++        if (idx < 0) return Result(Verdict.EYLEM_YOK)
++        if (alreadyFired) return Result(Verdict.ZATEN_SILINDI)
++        return Result(Verdict.SIL, idx)
++    }
++}
+diff --git a/app/src/emulatorDemo/java/com/suzgec/app/listener/InAppDelete.kt b/app/src/emulatorDemo/java/com/suzgec/app/listener/InAppDelete.kt
+new file mode 100644
+index 0000000..730bc89
+--- /dev/null
++++ b/app/src/emulatorDemo/java/com/suzgec/app/listener/InAppDelete.kt
+@@ -0,0 +1,8 @@
++package com.suzgec.app.listener
++
++import com.suzgec.app.emulatordemo.EmulatorInAppDelete
++
++/** emulatorDemo varyantı: "uygulamadan da sil" demosu (yalnız emülatörde, yalnız Demo Gönderici). */
++object InAppDelete {
++    val hook: InAppDeleteHook = EmulatorInAppDelete
++}
+diff --git a/app/src/emulatorDemo/res/values/strings.xml b/app/src/emulatorDemo/res/values/strings.xml
+new file mode 100644
+index 0000000..48ec92e
+--- /dev/null
++++ b/app/src/emulatorDemo/res/values/strings.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <!-- emulatorDemo varyantı: standart Süzgeç'ten ayırt edilsin. -->
++    <string name="app_name">Süzgeç (emülatör demo)</string>
++</resources>
+diff --git a/app/src/main/java/com/suzgec/app/listener/InAppDeleteHook.kt b/app/src/main/java/com/suzgec/app/listener/InAppDeleteHook.kt
+new file mode 100644
+index 0000000..0f2bb76
+--- /dev/null
++++ b/app/src/main/java/com/suzgec/app/listener/InAppDeleteHook.kt
+@@ -0,0 +1,26 @@
++package com.suzgec.app.listener
++
++import android.content.Context
++import android.service.notification.StatusBarNotification
++import androidx.compose.runtime.Composable
++import com.suzgec.app.rules.Decision
++
++/**
++ * Emülatör demosu kancası ("uygulamanın içinden de sil", 25 Kasım; yalnız `emulator-silme-demo` dalı).
++ *
++ * Bu arayüz boştur. İş yapan uygulaması YALNIZ `src/emulatorDemo/` kaynak kümesindedir; `standart` varyantta
++ * (M51 ve release) [InAppDelete.hook] hiçbir şey yapmaz, Ayarlar'a bölüm eklemez (CLAUDE.md §0 teknik kilit).
++ */
++interface InAppDeleteHook {
++    /** Ayarlar'da bu kancanın bölümü gösterilsin mi (standart: hayır). */
++    val hasSettings: Boolean get() = false
++
++    /** Ayarlar bölümü (standart: boş). */
++    @Composable
++    fun SettingsContent() {
++    }
++
++    /** Karar kayda yazılıp bildirim panelden kaldırıldıktan sonra çağrılır (standart: hiçbir şey yapmaz). */
++    suspend fun onDecided(context: Context, sbn: StatusBarNotification, decision: Decision) {
++    }
++}
+diff --git a/app/src/main/java/com/suzgec/app/listener/SuzgecListener.kt b/app/src/main/java/com/suzgec/app/listener/SuzgecListener.kt
+index 867e8a2..09f34e3 100644
+--- a/app/src/main/java/com/suzgec/app/listener/SuzgecListener.kt
++++ b/app/src/main/java/com/suzgec/app/listener/SuzgecListener.kt
+@@ -354,6 +354,12 @@ class SuzgecListener : NotificationListenerService() {
+                     Log.e(TAG, "Panelden silinemedi: ${sbn.key}", e)
+                 }
+             }
++            // Emülatör demosu kancası: standart varyantta (M51, release) hiçbir şey yapmaz.
++            try {
++                InAppDelete.hook.onDecided(this@SuzgecListener, sbn, d)
++            } catch (e: Exception) {
++                Log.e(TAG, "Demo kancası çalışmadı: ${sbn.key}", e)
++            }
+         }
+     }
+ }
+diff --git a/app/src/main/java/com/suzgec/app/ui/SettingsScreen.kt b/app/src/main/java/com/suzgec/app/ui/SettingsScreen.kt
+index ccbd84f..b72faf4 100644
+--- a/app/src/main/java/com/suzgec/app/ui/SettingsScreen.kt
++++ b/app/src/main/java/com/suzgec/app/ui/SettingsScreen.kt
+@@ -50,6 +50,7 @@ import com.suzgec.app.stats.Weekly
+ import android.widget.Toast
+ import androidx.compose.foundation.clickable
+ import com.suzgec.app.delivery.Delivery
++import com.suzgec.app.listener.InAppDelete
+ import com.suzgec.app.rules.Category
+ import com.suzgec.app.settings.SuzgecSettings
+ import androidx.compose.foundation.horizontalScroll
+@@ -92,6 +93,8 @@ fun SettingsScreen(app: SuzgecApp, onBack: () -> Unit) {
+             item { HorizontalDivider() }
+             item { SectionTitle("Görmek istemediğin içerikler") }
+             item { FiltersSection(app) }
++            // Emülatör demosu (yalnız emulatorDemo varyantında görünür; standart'ta bu satır hiç eklenmez).
++            if (InAppDelete.hook.hasSettings) item { InAppDelete.hook.SettingsContent() }
+             item { HorizontalDivider() }
+             item { SectionTitle("Öncelikli uygulamalar") }
+             item {
+diff --git a/app/src/standart/java/com/suzgec/app/listener/InAppDelete.kt b/app/src/standart/java/com/suzgec/app/listener/InAppDelete.kt
+new file mode 100644
+index 0000000..5e21268
+--- /dev/null
++++ b/app/src/standart/java/com/suzgec/app/listener/InAppDelete.kt
+@@ -0,0 +1,6 @@
++package com.suzgec.app.listener
++
++/** Standart varyant (M51, release): kanca hiçbir şey yapmaz. */
++object InAppDelete {
++    val hook: InAppDeleteHook = object : InAppDeleteHook {}
++}
+diff --git a/app/src/testEmulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicyTest.kt b/app/src/testEmulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicyTest.kt
+new file mode 100644
+index 0000000..ccd76ad
+--- /dev/null
++++ b/app/src/testEmulatorDemo/java/com/suzgec/app/emulatordemo/InAppDeletePolicyTest.kt
+@@ -0,0 +1,78 @@
++package com.suzgec.app.emulatordemo
++
++import com.suzgec.app.DeviceKind
++import com.suzgec.app.emulatordemo.InAppDeletePolicy.Verdict
++import com.suzgec.app.rules.Category
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertFalse
++import org.junit.Test
++
++/** emulatorDemo "uygulamadan da sil" kilitleri (CLAUDE.md §0 teknik kilit). */
++class InAppDeletePolicyTest {
++    private val sender = "com.suzgec.sender"
++    private val sil = listOf("Sil")
++
++    private fun decide(
++        pkg: String = sender,
++        actions: List<String?> = sil,
++        category: Category = Category.SILINENLER,
++        type: Int? = 8,
++        emulator: Boolean = true,
++        enabled: Boolean = true,
++        fired: Boolean = false,
++    ) = InAppDeletePolicy.decide(pkg, actions, category, type, emulator, enabled, fired).verdict
++
++    @Test
++    fun izinListesiTekElemanVeYalnizDemoGonderici() {
++        assertEquals(setOf("com.suzgec.sender"), InAppDeletePolicy.ALLOWED_PACKAGES)
++        assertEquals("Sil", InAppDeletePolicy.ACTION_TITLE)
++        for (p in listOf(
++            "com.whatsapp", "com.samsung.android.messaging", "com.google.android.apps.messaging",
++            "org.telegram.messenger", "com.microsoft.office.outlook", "com.suzgec.app",
++            "com.suzgec.sender.sahte", "com.suzgec", "COM.SUZGEC.SENDER", "",
++        )) {
++            assertEquals(p, Verdict.IZINSIZ_PAKET, decide(pkg = p))
++        }
++        assertEquals(Verdict.SIL, decide())
++    }
++
++    @Test
++    fun gercekCihazdaHicbirSeyYapilmaz() {
++        assertEquals(Verdict.GERCEK_CIHAZ, decide(emulator = false))
++        assertEquals(Verdict.GERCEK_CIHAZ, decide(emulator = false, enabled = false))
++        // M51 benzeri parmak izi emülatör sayılmaz.
++        assertFalse(DeviceKind.isEmulator("samsung/m51nsxx/m51:12/x:user/release-keys", "qcom", "SM-M515F", "m51nsxx", null))
++    }
++
++    @Test
++    fun anahtarKapalikenHicbirSeyYapilmaz() {
++        assertEquals(Verdict.KAPALI, decide(enabled = false))
++    }
++
++    @Test
++    fun kumarDisiKarardaHicbirSeyYapilmaz() {
++        // anne: birebir mesaj, Önemli
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.ONEMLI, type = 2))
++        // bonus_kart: kampanya, Önemsiz
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.ONEMSIZ, type = 7))
++        // alışveriş filtresiyle Silinenler'e giden kampanya: kumar değil
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.SILINENLER, type = 7))
++        // sosyal medya filtresiyle Silinenler
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.SILINENLER, type = 9))
++        // Kritik, Normal, Dokunulmaz ve türü bilinmeyen
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.KRITIK, type = 1))
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.NORMAL, type = 3))
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.DOKUNMA, type = null))
++        assertEquals(Verdict.KUMAR_DEGIL, decide(category = Category.SILINENLER, type = null))
++    }
++
++    @Test
++    fun yalnizSilBasligiVeBirKez() {
++        assertEquals(Verdict.EYLEM_YOK, decide(actions = emptyList()))
++        assertEquals(Verdict.EYLEM_YOK, decide(actions = listOf("Yanıtla", "Okundu", "sil", "Sil ", null)))
++        val r = InAppDeletePolicy.decide(sender, listOf("Yanıtla", "Sil"), Category.SILINENLER, 8, true, true, false)
++        assertEquals(Verdict.SIL, r.verdict)
++        assertEquals(1, r.actionIndex)
++        assertEquals(Verdict.ZATEN_SILINDI, decide(fired = true))
++    }
++}
+diff --git a/docs/emulator_silme_demo.md b/docs/emulator_silme_demo.md
+new file mode 100644
+index 0000000..fac5b9a
+--- /dev/null
++++ b/docs/emulator_silme_demo.md
+@@ -0,0 +1,52 @@
++# Emülatöre özel "uygulamanın içinden de sil" demosu (dal: `emulator-silme-demo`)
++
++Tarih: 25 Kasım 2026. **Yalnız bu dalda; main'e merge edilmez.** v1.0 (main, `v1.0` etiketi, release APK, M51 kurulumu) değişmedi.
++
++## Ne yapar?
++Kumar kararıyla Silinenler'e giden bildirim, **yalnız Demo Gönderici'nin (`com.suzgec.sender`)** bildirimiyse ve
++üzerinde **"Sil"** başlıklı eylem varsa, Süzgeç o eylemi **bir kez** tetikler. Demo Gönderici yalnız **kendi sahte gelen
++kutusundan** o kaydı siler. Süzgeç kayda "· Uygulamadan da silindi (demo)" ekler; Silinenler'deki "Neden burada?"
++satırında görünür. Kumar dışı hiçbir karar tetiklemez.
++
++## Üç kilit (CLAUDE.md §0 teknik kilit)
++| Kilit | Nasıl |
++|---|---|
++| 1. Hedef | `InAppDeletePolicy.ALLOWED_PACKAGES = setOf("com.suzgec.sender")` (tek eleman, testle sabit); yalnız başlığı tam "Sil" olan eylem |
++| 2. Ayrı varyant | `productFlavors` boyutu `dagitim`: **standart** (varsayılan; M51 ve release) ve **emulatorDemo** (`applicationIdSuffix .emulatordemo`). Tetikleyen kod yalnız `app/src/emulatorDemo/`. `app/src/main`'de yalnız boş `InAppDeleteHook` arayüzü; `app/src/standart`'ta işlem yapmayan nesne |
++| 3. Çalışma zamanı | `DeviceKind.isEmulator()` değilse hiçbir şey yapılmaz, logcat'e "gerçek cihaz: devre dışı"; Ayarlar'da varsayılanı **kapalı** "Uygulamadan da sil (deneme)" anahtarı (yalnız emulatorDemo'da görünür) |
++
++## Değişen / eklenen dosyalar
++- `app/build.gradle.kts` — iki flavor
++- `app/src/main/.../listener/InAppDeleteHook.kt` — boş arayüz (yeni)
++- `app/src/main/.../listener/SuzgecListener.kt` — karar uygulandıktan sonra `InAppDelete.hook.onDecided(...)` (standart'ta boş)
++- `app/src/main/.../ui/SettingsScreen.kt` — `hasSettings` doğruysa anahtar bölümü (standart'ta satır eklenmez)
++- `app/src/standart/.../listener/InAppDelete.kt` — işlem yapmayan kanca
++- `app/src/emulatorDemo/.../listener/InAppDelete.kt`, `emulatordemo/InAppDeletePolicy.kt`, `emulatordemo/EmulatorInAppDelete.kt`, `res/values/strings.xml`
++- `app/src/testEmulatorDemo/.../InAppDeletePolicyTest.kt` — 5 test
++- `sender/`: `FakeInbox.kt` (sahte kutu + dışa kapalı `FakeDeleteReceiver`), `Demo.kt` ("Sil" eylemi, `FLAG_IMMUTABLE`), `MainActivity.kt` ("Sahte Mesajlar: N" ekranı), `SendReceiver.kt` (`sahte_bosalt`), manifest
++
++## Test sonuçları
++| Görev | Sonuç |
++|---|---|
++| `:app:testStandartDebugUnitTest` | 103 test, 103 geçti (v1.0 ile aynı) |
++| `:app:testEmulatorDemoDebugUnitTest` | 108 test (103 + 5 yeni), 108 geçti |
++
++## Emülatör (API 37, emulatorDemo debug + Demo Gönderici debug)
++| Anahtar | Gönderilen | Süzgeç kararı | Demo kancası | Sahte kutu |
++|---|---|---|---|---|
++| kapalı | kumar_sms | Silinenler [kumar] | KAPALI | kalır |
++| kapalı | anne | Önemli [birebir_sohbet] | KAPALI | kalır |
++| kapalı | bonus_kart | Önemsiz [model] | KAPALI | kalır |
++| açık | kumar_sms | Silinenler [kumar] | **uygulamadan_silindi** | **silindi** |
++| açık | anne | Önemli [birebir_sohbet] | KUMAR_DEGIL | kalır |
++| açık | bonus_kart | Önemsiz [model] | KUMAR_DEGIL | kalır |
++| açık | bahis | Silinenler [kumar] | **uygulamadan_silindi** | **silindi** |
++| açık | aldatici_kumar | Silinenler [model, kumar %98] | **uygulamadan_silindi** | **silindi** |
++| açık | kurum_kampanya_sms | Önemsiz [model] | KUMAR_DEGIL | kalır |
++
++## Ayrım kanıtı
++- `apkanalyzer dex packages`: `app-standart-debug.apk` ve `app-standart-release-unsigned.apk` (yalnız inceleme için imzasız derlendi) içinde `emulatordemo` / `InAppDeletePolicy` / `EmulatorInAppDelete` **0 satır**; `app-emulatorDemo-debug.apk` içinde 85 satır. v1.0 teslim APK'sında 0.
++- CLAUDE.md §0 grep'i `app/src/main` ve `app/src/standart` üzerinde **boş**; `actionIntent` yalnız `app/src/emulatorDemo` içinde.
++- Hiçbir APK'da `BIND_ACCESSIBILITY_SERVICE` yok.
++
++Demo videosu: [Türkçe, 2:53](https://youtu.be/Eu482-Sd8X8?t=173) · [English, 2:53](https://youtu.be/rKRlmqLBZEY?t=173)
+diff --git a/sender/src/main/AndroidManifest.xml b/sender/src/main/AndroidManifest.xml
+index 8f99da5..923e192 100644
+--- a/sender/src/main/AndroidManifest.xml
++++ b/sender/src/main/AndroidManifest.xml
+@@ -21,5 +21,10 @@
+         <receiver
+             android:name=".SendReceiver"
+             android:exported="true" />
++
++        <!-- Sahte gelen kutusu "Sil" eylemi (yalnız kendi PendingIntent'i; dışa kapalı) -->
++        <receiver
++            android:name=".FakeDeleteReceiver"
++            android:exported="false" />
+     </application>
+ </manifest>
+diff --git a/sender/src/main/java/com/suzgec/sender/Demo.kt b/sender/src/main/java/com/suzgec/sender/Demo.kt
+index 2f98151..e69261a 100644
+--- a/sender/src/main/java/com/suzgec/sender/Demo.kt
++++ b/sender/src/main/java/com/suzgec/sender/Demo.kt
+@@ -103,6 +103,18 @@ fun send(ctx: Context, d: Demo) {
+         .also { b -> d.category?.let { b.setCategory(it) } }
+ 
+     val b = base()
++    // Sahte gelen kutusu (emülatör silme demosu): mesaj biçimli demolar listeye girer ve "Sil" eylemi alır.
++    // Eylem yalnız Demo Gönderici'nin kendi (dışa kapalı) alıcısına gider; o da yalnız kendi listesinden siler.
++    if (FakeInbox.accepts(d)) {
++        val uid = FakeInbox.add(ctx, d)
++        val del = PendingIntent.getBroadcast(
++            ctx, notifId,
++            Intent(FakeInbox.ACTION_DELETE).setClass(ctx, FakeDeleteReceiver::class.java)
++                .putExtra(FakeInbox.EXTRA_UID, uid).putExtra(FakeInbox.EXTRA_NOTIF_ID, notifId),
++            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
++        )
++        b.addAction(Notification.Action.Builder(null, "Sil", del).build())
++    }
+     when (d.kind) {
+         Kind.PLAIN, Kind.SHORT_LIVED -> {
+             if (d.title.isNotEmpty()) b.setContentTitle(d.title)
+diff --git a/sender/src/main/java/com/suzgec/sender/FakeInbox.kt b/sender/src/main/java/com/suzgec/sender/FakeInbox.kt
+new file mode 100644
+index 0000000..3825f96
+--- /dev/null
++++ b/sender/src/main/java/com/suzgec/sender/FakeInbox.kt
+@@ -0,0 +1,81 @@
++package com.suzgec.sender
++
++import android.app.NotificationManager
++import android.content.BroadcastReceiver
++import android.content.Context
++import android.content.Intent
++import android.content.SharedPreferences
++import android.util.Log
++import org.json.JSONArray
++import org.json.JSONObject
++
++/**
++ * Demo Gönderici'nin KENDİ sahte gelen kutusu (emülatör "uygulamadan da sil" demosu, 25 Kasım).
++ * Mesaj biçimli demo gönderilince buraya eklenir; bildirimindeki "Sil" eylemi yalnız bu listeden siler.
++ * Başka hiçbir uygulamanın verisine dokunmaz.
++ */
++object FakeInbox {
++    private const val PREFS = "sahte_mesajlar"
++    private const val KEY = "liste"
++    const val ACTION_DELETE = "com.suzgec.sender.SAHTE_SIL"
++    const val EXTRA_UID = "uid"
++    const val EXTRA_NOTIF_ID = "notifId"
++
++    data class Item(val uid: Long, val id: String, val app: String, val title: String, val text: String, val time: Long)
++
++    fun prefs(ctx: Context): SharedPreferences = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
++
++    fun all(ctx: Context): List<Item> {
++        val arr = JSONArray(prefs(ctx).getString(KEY, "[]"))
++        return (0 until arr.length()).map { i ->
++            val o = arr.getJSONObject(i)
++            Item(o.getLong("uid"), o.getString("id"), o.getString("app"), o.getString("title"), o.getString("text"), o.getLong("time"))
++        }
++    }
++
++    private fun save(ctx: Context, items: List<Item>) {
++        val arr = JSONArray()
++        items.forEach {
++            arr.put(JSONObject().put("uid", it.uid).put("id", it.id).put("app", it.app).put("title", it.title).put("text", it.text).put("time", it.time))
++        }
++        prefs(ctx).edit().putString(KEY, arr.toString()).apply()
++    }
++
++    @Synchronized
++    fun add(ctx: Context, d: Demo): Long {
++        val now = System.currentTimeMillis()
++        val uid = maxOf(now, (all(ctx).maxOfOrNull { it.uid } ?: 0L) + 1)
++        save(ctx, all(ctx) + Item(uid, d.id, d.app, d.title, d.text, now))
++        Log.i("SuzgecSender", "Sahte kutuya eklendi: ${d.id} (Sahte Mesajlar: ${all(ctx).size})")
++        return uid
++    }
++
++    @Synchronized
++    fun remove(ctx: Context, uid: Long): Item? {
++        val items = all(ctx)
++        val hit = items.firstOrNull { it.uid == uid } ?: return null
++        save(ctx, items - hit)
++        return hit
++    }
++
++    fun clear(ctx: Context) = save(ctx, emptyList())
++
++    /** Mesaj biçimli demolar sahte kutuya girer (medya, navigasyon, ilerleme, kısa ömürlü ve grup özeti girmez). */
++    fun accepts(d: Demo): Boolean = d.kind in setOf(Kind.PLAIN, Kind.ONE_TO_ONE, Kind.GROUP_CHAT, Kind.TELEGRAM_CHANNEL)
++}
++
++/** "Sil" eylemi: yalnız Demo Gönderici'nin kendi sahte kutusundan siler (dışa kapalı alıcı). */
++class FakeDeleteReceiver : BroadcastReceiver() {
++    override fun onReceive(context: Context, intent: Intent) {
++        if (intent.action != FakeInbox.ACTION_DELETE) return
++        val uid = intent.getLongExtra(FakeInbox.EXTRA_UID, -1)
++        val removed = FakeInbox.remove(context, uid)
++        val notifId = intent.getIntExtra(FakeInbox.EXTRA_NOTIF_ID, -1)
++        if (notifId >= 0) context.getSystemService(NotificationManager::class.java).cancel(notifId)
++        if (removed != null) {
++            Log.i("SuzgecSender", "Sahte kutudan silindi: ${removed.id} (Sahte Mesajlar: ${FakeInbox.all(context).size})")
++        } else {
++            Log.i("SuzgecSender", "Sahte kutuda yok (zaten silinmiş): uid=$uid")
++        }
++    }
++}
+diff --git a/sender/src/main/java/com/suzgec/sender/MainActivity.kt b/sender/src/main/java/com/suzgec/sender/MainActivity.kt
+index 7843af4..48d2166 100644
+--- a/sender/src/main/java/com/suzgec/sender/MainActivity.kt
++++ b/sender/src/main/java/com/suzgec/sender/MainActivity.kt
+@@ -1,6 +1,7 @@
+ package com.suzgec.sender
+ 
+ import android.Manifest
++import android.content.SharedPreferences
+ import android.content.pm.PackageManager
+ import android.os.Build
+ import android.os.Bundle
+@@ -16,18 +17,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.safeDrawingPadding
+ import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.lazy.items
+ import androidx.compose.foundation.lazy.itemsIndexed
++import androidx.compose.material3.Card
+ import androidx.compose.material3.FilledTonalButton
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.OutlinedButton
+ import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
++import androidx.compose.material3.TextButton
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.DisposableEffect
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.unit.dp
++import java.text.SimpleDateFormat
++import java.util.Date
++import java.util.Locale
+ 
+-/** Demo bildirimlerini tek tek gönderen basit liste. */
++/** Demo bildirimlerini tek tek gönderen basit liste + Demo Gönderici'nin kendi sahte gelen kutusu. */
+ class MainActivity : ComponentActivity() {
++    private var showInbox by mutableStateOf(false)
++
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+         enableEdgeToEdge()
+@@ -36,32 +52,94 @@ class MainActivity : ComponentActivity() {
+         ) {
+             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+         }
++        showInbox = intent?.getStringExtra("ekran") == "sahte"
+         setContent {
+             MaterialTheme {
+                 Surface(Modifier.fillMaxSize()) {
+                     Column(Modifier.safeDrawingPadding()) {
+-                        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+-                            Text("Demo gönderici", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+-                            OutlinedButton(onClick = {
+-                                getSystemService(android.app.NotificationManager::class.java).cancelAll()
+-                            }) { Text("Hepsini kaldır") }
+-                        }
+-                        LazyColumn(
+-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+-                        ) {
+-                            itemsIndexed(DEMOS) { i, d ->
+-                                FilledTonalButton(onClick = { send(this@MainActivity, d) }, modifier = Modifier.fillMaxWidth()) {
+-                                    Column(Modifier.fillMaxWidth()) {
+-                                        Text("${i + 1}. ${d.app} — ${d.title.ifEmpty { d.text.take(30) }}")
+-                                        Text("Beklenen: ${d.expected}", style = MaterialTheme.typography.labelSmall)
+-                                    }
+-                                }
+-                            }
++                        if (showInbox) InboxScreen(onBack = { showInbox = false }) else SendScreen(onInbox = { showInbox = true })
++                    }
++                }
++            }
++        }
++    }
++
++    override fun onNewIntent(intent: android.content.Intent) {
++        super.onNewIntent(intent)
++        if (intent.getStringExtra("ekran") == "sahte") showInbox = true
++    }
++
++    @Composable
++    private fun SendScreen(onInbox: () -> Unit) {
++        val inbox = rememberInbox()
++        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
++            Text("Demo gönderici", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
++            OutlinedButton(onClick = {
++                getSystemService(android.app.NotificationManager::class.java).cancelAll()
++            }) { Text("Hepsini kaldır") }
++        }
++        TextButton(onClick = onInbox, modifier = Modifier.padding(horizontal = 8.dp)) {
++            Text("Sahte Mesajlar: ${inbox.size} →")
++        }
++        LazyColumn(
++            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
++            verticalArrangement = Arrangement.spacedBy(8.dp),
++        ) {
++            itemsIndexed(DEMOS) { i, d ->
++                FilledTonalButton(onClick = { send(this@MainActivity, d) }, modifier = Modifier.fillMaxWidth()) {
++                    Column(Modifier.fillMaxWidth()) {
++                        Text("${i + 1}. ${d.app} — ${d.title.ifEmpty { d.text.take(30) }}")
++                        Text("Beklenen: ${d.expected}", style = MaterialTheme.typography.labelSmall)
++                    }
++                }
++            }
++        }
++    }
++
++    @Composable
++    private fun InboxScreen(onBack: () -> Unit) {
++        val inbox = rememberInbox()
++        val fmt = remember { SimpleDateFormat("HH:mm:ss", Locale("tr")) }
++        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
++            TextButton(onClick = onBack) { Text("←") }
++            Text("Sahte Mesajlar: ${inbox.size}", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
++            OutlinedButton(onClick = { FakeInbox.clear(this@MainActivity) }) { Text("Boşalt") }
++        }
++        Text(
++            "Demo Gönderici'nin kendi sahte gelen kutusu (emülatör demosu). Gerçek mesaj yoktur.",
++            style = MaterialTheme.typography.bodySmall,
++            modifier = Modifier.padding(horizontal = 16.dp),
++        )
++        LazyColumn(
++            contentPadding = PaddingValues(16.dp),
++            verticalArrangement = Arrangement.spacedBy(8.dp),
++        ) {
++            items(inbox.reversed(), key = { it.uid }) { m ->
++                Card(Modifier.fillMaxWidth()) {
++                    Column(Modifier.padding(12.dp)) {
++                        Row {
++                            Text(m.app, style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
++                            Text(fmt.format(Date(m.time)), style = MaterialTheme.typography.labelSmall)
+                         }
++                        if (m.title.isNotEmpty()) Text(m.title, style = MaterialTheme.typography.titleSmall)
++                        Text(m.text, style = MaterialTheme.typography.bodyMedium)
+                     }
+                 }
+             }
+         }
+     }
+ }
++
++/** Sahte kutunun canlı hâli (Sil eylemi arka planda çalışınca ekran kendiliğinden güncellenir). */
++@Composable
++private fun rememberInbox(): List<FakeInbox.Item> {
++    val ctx = LocalContext.current
++    var items by remember { mutableStateOf(FakeInbox.all(ctx)) }
++    DisposableEffect(Unit) {
++        val prefs = FakeInbox.prefs(ctx)
++        val l = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> items = FakeInbox.all(ctx) }
++        prefs.registerOnSharedPreferenceChangeListener(l)
++        onDispose { prefs.unregisterOnSharedPreferenceChangeListener(l) }
++    }
++    return items
++}
+diff --git a/sender/src/main/java/com/suzgec/sender/SendReceiver.kt b/sender/src/main/java/com/suzgec/sender/SendReceiver.kt
+index e6b35cf..5de6e81 100644
+--- a/sender/src/main/java/com/suzgec/sender/SendReceiver.kt
++++ b/sender/src/main/java/com/suzgec/sender/SendReceiver.kt
+@@ -9,6 +9,7 @@ import android.util.Log
+  * adb ile tetikleme (test ve demo için):
+  *   adb shell am broadcast -f 32 -n com.suzgec.sender/.SendReceiver --es id banka
+  *   adb shell am broadcast -f 32 -n com.suzgec.sender/.SendReceiver --es id iptal   (hepsini kaldır)
++ *   adb shell am broadcast -f 32 -n com.suzgec.sender/.SendReceiver --es id sahte_bosalt   (sahte kutuyu boşalt)
+  */
+ class SendReceiver : BroadcastReceiver() {
+     override fun onReceive(context: Context, intent: Intent) {
+@@ -18,6 +19,11 @@ class SendReceiver : BroadcastReceiver() {
+             Log.i("SuzgecSender", "Tüm demo bildirimleri kaldırıldı")
+             return
+         }
++        if (id == "sahte_bosalt") {
++            FakeInbox.clear(context)
++            Log.i("SuzgecSender", "Sahte kutu boşaltıldı (Sahte Mesajlar: 0)")
++            return
++        }
+         val demo = DEMOS.firstOrNull { it.id == id }
+         if (demo == null) {
+             Log.w("SuzgecSender", "Bilinmeyen id: $id")
